@@ -73,38 +73,6 @@ while (have_posts()) {
 
         <?php  }
             wp_reset_postdata();
-
-            $relatedEvents = new WP_Query(array(
-                'posts_per_page' => 2,
-                'post_type' => 'event',
-                'meta_key' => 'event_date',
-                'orderby' => 'meta_value_num',
-                'order' => 'ASC',
-                'meta_query' => array(
-                    array(
-                        'key' => 'event_date',
-                        'compare' => '>=',
-                        'value' => date('Ymd'),
-                        'type' => 'numeric'
-                    ),
-                    array(
-                        'key' => 'related_program',
-                        'compare' => 'LIKE',
-                        'value' => '"' . get_the_ID() . '"'
-                    )
-                )
-            ));
-
-            if ($relatedEvents->have_posts()) { ?>
-                <hr class="section-break">
-                <h2 class="headline headline--medium">Upcoming <?php the_title() ?> Events</h2>
-            <?php
-                while ($relatedEvents->have_posts()) {
-                    $relatedEvents->the_post();
-
-                    get_template_part('template-parts/event');
-                }
-            }
         ?>
     </div>
 
