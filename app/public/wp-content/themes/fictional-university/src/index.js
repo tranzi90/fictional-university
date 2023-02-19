@@ -10,4 +10,4 @@ import Search from "./modules/Search"
 const mobileMenu = new MobileMenu()
 const heroSlider = new HeroSlider()
 const googleMap = new GoogleMap()
-const liveSearch = new Search()
+const search = new Search()
