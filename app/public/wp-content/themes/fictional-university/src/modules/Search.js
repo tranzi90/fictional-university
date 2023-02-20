@@ -47,19 +47,25 @@ class Search {
     }
 
     getResults() {
-        $.getJSON(`${universityData.root_url}/wp-json/wp/v2/posts?search=${this.searchField.val()}`, (posts) => {
+        $.when(
+            $.getJSON(`${universityData.root_url}/wp-json/wp/v2/posts?search=${this.searchField.val()}`),
+            $.getJSON(`${universityData.root_url}/wp-json/wp/v2/pages?search=${this.searchField.val()}`)
+        ).then((posts, pages) => {
+            const combinedResults = posts[0].concat(pages[0])
+
             this.searchResult.html(`
-                <h2 class="headline headline--medium headline--post-title">General Information</h2>
-                ${posts.length ? '<ul class="link-list min-list">' : '<p>No results...</p>'}
-                    ${posts.map(post => `
-                        <li>
-                            <a href="${post.link}">${post.title.rendered}</a>
-                        </li>
-                    `).join('')}
-                ${posts.length ? '</ul>' : ''}  
-            `)
+                    <h2 class="headline headline--medium headline--post-title">General Information</h2>
+                    ${combinedResults.length ? '<ul class="link-list min-list">' : '<p>No results...</p>'}
+                        ${combinedResults.map(item => `
+                            <li>
+                                <a href="${item.link}">${item.title.rendered}</a>
+                                ${item.type === 'post' ? `by ${item.authorName}` : ''} 
+                            </li>
+                        `).join('')}
+                    ${combinedResults.length ? '</ul>' : ''}  
+                `)
             this.isSpinnerVisible = false
-        })
+        }, () => this.searchResult.html('<p>Error reject cb</p>'))
     }
 
     keyPressDispatcher(e) {
