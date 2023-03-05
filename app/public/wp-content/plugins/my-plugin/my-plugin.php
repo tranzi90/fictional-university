@@ -5,6 +5,8 @@
   Version:       1.0
   Author:        Den
   Author URI:    https://github.com/tranzi90
+  Text Domain: wcpdomain
+  Domain Path: /languages
 */
 
 class WordCountAndTimePlugin {
@@ -78,7 +80,7 @@ class WordCountAndTimePlugin {
 
 	function adminPage() {
 		add_options_page('Word Count Settings',
-			'Word Count',
+			 __('Word Count', 'wcpdomain'),
 			'manage_options',
 			'word-count-settings',
 			array($this, 'pageHTML'));
@@ -98,12 +100,33 @@ class WordCountAndTimePlugin {
 <?php }
 
         function createHTML( $content ) {
-            if (get_option('wcp_location', '0') === '0') { ?>
-                <h3><?php get_option('wcp_headline', 'Post Stats') ?></h3><?php echo $content ?>
-            <?php } else { ?>
-	            <?php echo $content ?><h3><?php get_option('wcp_headline', 'Post Stats') ?></h3>
-            <?php }
-     }
+            $headline = esc_html(get_option('wcp_headline', 'Post Stats'));
+            $html = "<h3>$headline</h3>";
+            $info = __('This post has', 'wcpdomain');
+
+            if (get_option('wcp_wordcount', '1') or get_option('wcp_readtime', '1'))
+                $wordCount = str_word_count(strip_tags($content));
+
+	        if (get_option('wcp_wordcount', '1')) {
+		        $words = __('words', 'wcpdomain');
+		        $html .= "<p>$info $wordCount $words.</p>";
+	        }
+
+	        if (get_option('wcp_charcount', '1')) {
+                $chars = strlen(strip_tags($content));
+		        $html .= "<p>This post has $chars characters.</p>";
+	        }
+
+	        if (get_option('wcp_readtime', '1')) {
+                $readtime = round($wordCount/225) ;
+		        $html .= "<p>This post will take about $readtime minutes to read.</p>";
+	        }
+
+            if (get_option('wcp_location', '0') === '0') {
+                return $html . $content;
+            }
+            return $content . $html;
+        }
 }
 
 $wordCountAndTimePlugin = new WordCountAndTimePlugin();
