@@ -1,7 +1,7 @@
 <?php
 /*
   Plugin Name:   My plugin
-  Description:   test Description
+  Description:   Post Statistic
   Version:       1.0
   Author:        Den
   Author URI:    https://github.com/tranzi90
@@ -14,7 +14,12 @@ class WordCountAndTimePlugin {
 		add_action('admin_menu', array($this, 'adminPage'));
 		add_action('admin_init', array($this, 'settings'));
 		add_filter('the_content', array($this, 'ifWrap'));
+		add_action('init', array($this, 'languages'));
 	}
+
+    function languages() {
+        load_plugin_textdomain('wcpdomain', false, dirname(plugin_basename(__FILE__) . '/languages'));
+    }
 
     function ifWrap($content) {
         if (is_main_query() and is_single() and
