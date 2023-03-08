@@ -13,7 +13,33 @@ if (!defined('ABSPATH')) exit;
 class WordFilterPlugin {
 	function __construct() {
 		add_action('admin_menu', array($this, 'mainMenu'));
+		add_action('admin_init', array($this, 'settings'));
+        if (get_option('plugin_words_to_filter'))
+            add_filter('the_content', array($this, 'filterLogic'));
 	}
+
+    function settings() {
+	    add_settings_section('replacement-text-section', null, null, 'word-filter-options');
+
+	    register_setting('replacementFields', 'replacementText');
+	    add_settings_field('replacement-text',
+            'Filtered Text',
+            array($this, 'replacementFieldHTML'),
+            'word-filter-options',
+            'replacement-text-section');
+    }
+
+    function replacementFieldHTML() { ?>
+        <input type="text" name="replacementText" value="<?php echo esc_attr(get_option('replacementText', '***')) ?>">
+        <p class="description">Leave empty for total delete</p>
+<?php }
+
+    function filterLogic($content) {
+        $badWords = explode(',', get_option('plugin_words_to_filter'));
+	    $badWordsTrimmed = array_map('trim', $badWords);
+
+        return str_ireplace($badWordsTrimmed, '****', $content);
+    }
 
 	function mainMenu() {
 		$mainPageHook = add_menu_page('Words To Filter',
@@ -54,11 +80,14 @@ class WordFilterPlugin {
             <?php if ($_POST['justsubmitted'] === "true") $this->handleForm() ?>
 			<form action="" method="post">
                 <input type="hidden" name="justsubmitted" value="true">
+                <?php wp_nonce_field('saveFilterWords', 'myNonce') ?>
 				<label for="plugin_words_to_filter">
 					<p>Enter a <strong>comma-separated</strong> words u want to filter</p>
 				</label>
 				<div class="word-filter__flex-container">
-					<textarea name="plugin_words_to_filter" id="plugin_words_to_filter" placeholder="bad, mean, awful, horrible"></textarea>
+					<textarea name="plugin_words_to_filter" id="plugin_words_to_filter" placeholder="bad, mean, awful, horrible">
+                        <?php echo esc_textarea(get_option('plugin_words_to_filter')) ?>
+                    </textarea>
 				</div>
 				<input type="submit" name="submit" id="submit"
 				       class="button button-primary"
@@ -67,16 +96,33 @@ class WordFilterPlugin {
 		</div>
 <?php	}
 
-	function optionsSubPage() {
-
-	}
+	function optionsSubPage() { ?>
+        <div class="wrap">
+			<h1>Word Filter Options</h1>
+			<form action="options.php" method="post">
+				<?php
+                    settings_fields('replacementFields');
+                    do_settings_sections('word-filter-options');
+                    submit_button();
+				?>
+			</form>
+		</div>
+	<?php }
 
     function handleForm() {
-        update_option('plugin_words_to_filter', $_POST['plugin_words_to_filter']); ?>
-        <div class="updated">
-            <p>Your filtered words were saved.</p>
-        </div>
-    <?php }
+        if (wp_verify_nonce($_POST['myNonce'], 'saveFilterWords') and current_user_can('manage_options')) {
+	        update_option('plugin_words_to_filter', sanitize_text_field($_POST['plugin_words_to_filter'])); ?>
+
+            <div class="updated">
+                <p>Your filtered words were saved.</p>
+            </div>
+        <?php }
+        else { ?>
+            <div class="error">
+                <p>Permission error!</p>
+            </div>
+        <?php }
+     }
 }
 
 $wordFilterPlugin = new WordFilterPlugin();
