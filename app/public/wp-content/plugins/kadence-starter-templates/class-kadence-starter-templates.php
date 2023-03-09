@@ -196,7 +196,7 @@ class Starter_Templates {
 			define( 'KADENCE_STARTER_TEMPLATES_URL', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 		}
 		if ( ! defined( 'KADENCE_STARTER_TEMPLATES_VERSION' ) ) {
-			define( 'KADENCE_STARTER_TEMPLATES_VERSION', '1.2.18' );
+			define( 'KADENCE_STARTER_TEMPLATES_VERSION', '1.2.19' );
 		}
 	}
 
@@ -735,6 +735,11 @@ class Starter_Templates {
 				'state' => Plugin_Check::active_check( 'depicter/depicter.php' ),
 				'src'   => 'repo',
 			),
+			'seriously-simple-podcasting' => array(
+				'title' => 'Seriously Simple Podcasting',
+				'state' => Plugin_Check::active_check( 'seriously-simple-podcasting/seriously-simple-podcasting.php' ),
+				'src'   => 'repo',
+			),
 		);
 		$palettes = array(
 			array(
@@ -1173,6 +1178,13 @@ class Starter_Templates {
 					'path'  => 'depicter/depicter.php',
 					'src'   => 'repo',
 				),
+				'seriously-simple-podcasting' => array(
+					'title' => 'Seriously Simple Podcasting',
+					'base'  => 'seriously-simple-podcasting',
+					'slug'  => 'seriously-simple-podcasting',
+					'path'  => 'seriously-simple-podcasting/seriously-simple-podcasting.php',
+					'src'   => 'repo',
+				),
 			);
 			$plugin_information = array();
 			foreach( $info['plugins'] as $plugin ) {
@@ -1416,6 +1428,13 @@ class Starter_Templates {
 					'path'  => 'depicter/depicter.php',
 					'src'   => 'repo',
 				),
+				'seriously-simple-podcasting' => array(
+					'title' => 'Seriously Simple Podcasting',
+					'base'  => 'seriously-simple-podcasting',
+					'slug'  => 'seriously-simple-podcasting',
+					'path'  => 'seriously-simple-podcasting/seriously-simple-podcasting.php',
+					'src'   => 'repo',
+				),
 			);
 			foreach( $info['plugins'] as $plugin ) {
 				$path = false;
@@ -1519,8 +1538,8 @@ class Starter_Templates {
 						if ( ! current_user_can( 'install_plugins' ) ) {
 							wp_send_json_error( 'Permissions Issue' );
 						}
-						//$silent = false; 
-						$silent = ( 'give' === $base || 'elementor' === $base ? false : true );
+						$silent = false; 
+						//$silent = ( 'give' === $base || 'elementor' === $base ? false : true );
 						if ( 'give' === $base ) {
 							// Make sure give doesn't add it's pages, prevents having two sets.
 							update_option( 'give_install_pages_created', 1, '', false );

@@ -38,7 +38,7 @@ class WordFilterPlugin {
         $badWords = explode(',', get_option('plugin_words_to_filter'));
 	    $badWordsTrimmed = array_map('trim', $badWords);
 
-        return str_ireplace($badWordsTrimmed, '****', $content);
+        return str_ireplace($badWordsTrimmed, esc_html(get_option('replacementText', '****')), $content);
     }
 
 	function mainMenu() {
@@ -101,6 +101,7 @@ class WordFilterPlugin {
 			<h1>Word Filter Options</h1>
 			<form action="options.php" method="post">
 				<?php
+                    settings_errors();
                     settings_fields('replacementFields');
                     do_settings_sections('word-filter-options');
                     submit_button();

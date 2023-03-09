@@ -3,7 +3,7 @@ Contributors: britner
 Tags: templates, gutenberg
 Requires at least: 5.2
 Tested up to: 6.1
-Stable tag: 1.2.18
+Stable tag: 1.2.19
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -107,6 +107,10 @@ Absolutely not.
 
 
 == Changelog ==
+
+= 1.2.19 =
+* Add: support for importing's with Seriously Simple Podcasting.
+* Fix: Issue where gradients were not importing correctly. 
 
 = 1.2.18 =
 * Fix: Unescaped variable. 
