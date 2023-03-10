@@ -12,14 +12,25 @@ if (!defined('ABSPATH')) exit;
 
 class PayingAttention {
 	function __construct() {
-		add_action('enqueue_block_editor_assets', array($this, 'adminAssets'));
+		add_action('init', array($this, 'adminAssets'));
 
 	}
 
     function adminAssets() {
-        wp_enqueue_script('newblocktype', plugin_dir_url(__FILE__) . 'test.js', array('wp-blocks', 'wp-element'));
+        wp_register_script('newblocktype',
+	        plugin_dir_url(__FILE__) . 'build/index.js',
+	        array('wp-blocks', 'wp-element')
+        );
+
+		register_block_type('plugin/are-you-paying-attention', array(
+			'editor_script' => 'newblocktype',
+			'render_callback' => array($this, 'theHTML')
+		));
     }
 
+	function theHTML($attributes) {
+
+	}
 }
 
 $payingAttention = new PayingAttention();
